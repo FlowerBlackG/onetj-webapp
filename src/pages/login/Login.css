@@ -1,0 +1,23 @@
+/*
+ * 2051565 GTY
+ * 创建于2024年1月5日 江西省上饶市玉山县
+ */
+
+@import '../../index.css';
+
+.button {
+    background: #fff5;
+    box-sizing: border-box;
+    padding: 12px;
+    text-align: center;
+    border-radius: 12px;
+
+    transition: 0.1s;
+
+    user-select: none;
+}
+
+.button:active {
+
+    background: #eee5;
+}

@@ -1,13 +1,59 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/*
+ * 2051565 GTY
+ * 创建于2024年1月5日 江西省上饶市玉山县
+ */
+
+@font-face {
+    font-family: 'MiSans';
+    src: url('https://canfish.oss-cn-shanghai.aliyuncs.com/shared/fonts/MiSans-Regular.woff2') format('woff2');
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body, html {
+    
+    font-family: 'MiSans';
+
+    /* 设为单页 app 模式。 */
+    margin: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* 更现代化的滚动条。 */
+::-webkit-scrollbar,
+.nicer-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track,
+.nicer-scrollbar::-webkit-scrollbar-track {
+    background: #0000;
+}
+
+::-webkit-scrollbar-thumb,
+.nicer-scrollbar::-webkit-scrollbar-thumb {
+    background: #0002;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover,
+.nicer-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #0003;
+}
+
+::-webkit-scrollbar-thumb:active,
+.nicer-scrollbar::-webkit-scrollbar-thumb:active {
+    background: #0004;
+}
+
+.overflow-y-overlay {
+    overflow-y: overlay;
+}
+
+.overflow-x-overlay {
+    overflow-x: overlay;
 }

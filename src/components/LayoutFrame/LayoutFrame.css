@@ -1,0 +1,25 @@
+/* 上财果团团 */
+
+@import '../../index.css';
+
+.navItem {
+    width: 100%;
+    height: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #000a;
+    font-size: 18px;
+}
+
+.navItem:hover {
+    background-color: #0001;
+}
+
+.navItem:active {
+    background-color: #0002;
+}
+
+.navItemCurrent {
+    border-left: 8px solid #0004;
+}
