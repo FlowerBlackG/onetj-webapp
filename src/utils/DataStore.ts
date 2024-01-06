@@ -30,4 +30,8 @@ export default class DataStore {
 
         return raw
     }
+
+    static remove(key: string) {
+        this.cookies.remove(this.makeKey(key))
+    }
 }

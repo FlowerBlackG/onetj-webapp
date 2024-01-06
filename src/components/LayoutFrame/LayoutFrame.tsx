@@ -1,16 +1,16 @@
 /* 上财果团团 */
 
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { PageRouteData, pageRouteEntityMap, pageRoutes } from '../../common/PageRoutes';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { FreeKeyObject } from '../../utils/FreeKeyObject';
 import './LayoutFrame.css'
 import { globalData, resetGlobalData } from '../../common/GlobalData';
 import { Button, Menu, message, Spin } from 'antd';
 import URLNavigate from '../../utils/URLNavigate';
-import { LogoutOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, LeftOutlined, LogoutOutlined } from '@ant-design/icons';
 import { request } from '../../utils/request';
 import MacroDefines from '../../common/MacroDefines';
+import { PageRouteData } from '../../common/PageRoutes';
 
 type LayoutFrameState = {
     pageTitle: string,
@@ -20,10 +20,14 @@ type LayoutFrameState = {
     redirecting: boolean,
 
     dataLoading: boolean,
-    pageIcon: string
+    pageIcon: string,
+
+    onNavigateBack: boolean
 }
 
 export default class LayoutFrame extends React.Component<FreeKeyObject, LayoutFrameState> {
+
+
     constructor(props: FreeKeyObject) {
         super(props)
 
@@ -37,7 +41,9 @@ export default class LayoutFrame extends React.Component<FreeKeyObject, LayoutFr
         redirecting: false,
         dataLoading: false,
 
-        pageIcon: ''
+        pageIcon: '',
+
+        onNavigateBack: false
     }
 
     /**
@@ -87,6 +93,12 @@ export default class LayoutFrame extends React.Component<FreeKeyObject, LayoutFr
     }
 
     override render(): React.ReactNode {
+
+        if (this.state.onNavigateBack) {
+            // todo: 目前仅能返回主页。
+            return <Navigate to={ '/home' } replace={true} />
+        }
+
         return <div style={{
             position: 'absolute',
             left: 0,
@@ -111,10 +123,36 @@ export default class LayoutFrame extends React.Component<FreeKeyObject, LayoutFr
                     alignItems: 'center',
                     color: '#000b',
                     fontSize: 20,
-                    paddingLeft: 18,
-                    borderBottom: '1px solid #0004'
+                    paddingLeft: 8,
+                    borderBottom: '1px solid #0004',
+                    userSelect: 'none'
                 }}>
-                    { this.state.pageTitle }
+
+                    { /* 返回。 */ }
+                    <Button
+                        shape='circle'
+                        icon={<ArrowLeftOutlined />}
+                        onClick={() => {
+                            this.setState({
+                                onNavigateBack: true
+                            })
+                        }}
+                    />  
+
+                    <div style={{ width: 16 }} />
+
+                    <div
+                        style={{
+                            textAlign: 'center',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            maxWidth: 320
+                        }}
+                    >
+
+                        { this.state.pageTitle }
+                    </div>
 
                     <Spin 
                         spinning={this.state.dataLoading}
@@ -123,19 +161,6 @@ export default class LayoutFrame extends React.Component<FreeKeyObject, LayoutFr
                         }}
                         size='small'
                     />
-
-                    { /* 退出登录。 */ }
-                    <Button 
-                        style={{
-                            right: 8,
-                            position: 'absolute'
-                        }}
-                        shape='round'
-                        icon={<LogoutOutlined />}
-                        onClick={() => {
-                            // todo
-                        }}
-                    > 退出登录 </Button>
                     
                 </div>
 
@@ -158,9 +183,28 @@ export default class LayoutFrame extends React.Component<FreeKeyObject, LayoutFr
 
         </div>
     }
+
+    override componentDidMount() {
+        if (currentRouteEntity !== undefined) {
+            this.setCurrentPageEntity(currentRouteEntity)
+        }
+
+        if (pageTitle !== undefined) {
+            this.setTitle(pageTitle)
+        }
+    }
 }
 
+let currentRouteEntity: PageRouteData | undefined = undefined
+let pageTitle: string | undefined = undefined
 
 export function loadPageToLayoutFrame(entity: PageRouteData) {
+    currentRouteEntity = entity
+    pageTitle = entity.title
     globalData.layoutFrameRef.current?.setCurrentPageEntity(entity)
+}
+
+export function setLayoutFrameTitle(title: string) {
+    pageTitle = title
+    globalData.layoutFrameRef.current?.setTitle(title)
 }

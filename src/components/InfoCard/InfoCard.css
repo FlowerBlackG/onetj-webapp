@@ -1,0 +1,10 @@
+/*
+ * 2051565 GTY
+ * 创建于2024年1月6日 湖南省长沙市（沪昆线）
+ */
+
+@import '../../index.css';
+
+.info-card:active {
+    background: #6664;
+}

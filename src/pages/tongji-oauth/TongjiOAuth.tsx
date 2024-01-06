@@ -6,7 +6,6 @@
  */
 
 import React from "react";
-import { pageRouteEntityMap } from "../../common/PageRoutes";
 import { later } from "../../utils/later";
 import { globalData } from "../../common/GlobalData";
 import { loadPageToLayoutFrame } from "../../components/LayoutFrame/LayoutFrame";
@@ -14,6 +13,7 @@ import HttpUrlUtils from "../../utils/HttpUrlUtils";
 import { Navigate } from "react-router-dom";
 import TJApi from "../../utils/TJApi";
 import { message } from "antd";
+import PageRouteManager from "../../common/PageRoutes";
 
 
 interface TongjiOAuthPageState {
@@ -24,7 +24,7 @@ interface TongjiOAuthPageState {
 export default class TongjiOAuthPage extends React.Component<
     any, TongjiOAuthPageState
 > {
-    pageEntity = pageRouteEntityMap['tongji-oauth']
+    pageEntity = PageRouteManager.getRouteEntity('tongji-oauth')
 
     state: TongjiOAuthPageState = {
         errorMsg: '',

@@ -3,11 +3,11 @@
  * 创建于2024年1月5日 江西省上饶市玉山县
  */
 
-import { pageRoutes } from './common/PageRoutes'
 import axios from 'axios'
 import React from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import MacroDefines from './common/MacroDefines'
+import PageRouteManager from './common/PageRoutes'
 
 export default class AppMain extends React.Component {
     constructor(props: any) {
@@ -23,7 +23,7 @@ export default class AppMain extends React.Component {
             <Routes>
                 <Route path="/">{
 
-                    pageRoutes.map((route) => {
+                    PageRouteManager.getRoutes().map((route) => {
                         return <Route
                             path={ route.path }
                             element={ route.element }

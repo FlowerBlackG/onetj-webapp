@@ -4,7 +4,6 @@
  */
 
 import { ReactNode } from "react";
-import { pageRouteEntityMap } from "../../common/PageRoutes";
 import { loadPageToLayoutFrame } from "../../components/LayoutFrame/LayoutFrame";
 import { later } from "../../utils/later";
 import React from "react";
@@ -15,6 +14,7 @@ import Version from "../../common/Version";
 import { Navigate } from "react-router-dom";
 import HttpUrlUtils from "../../utils/HttpUrlUtils";
 import TJApi from "../../utils/TJApi";
+import PageRouteManager from "../../common/PageRoutes";
 
 
 interface LoginPageState {
@@ -25,7 +25,7 @@ interface LoginPageState {
 export default class LoginPage extends React.Component<
     any, LoginPageState
 > {
-    pageEntity = pageRouteEntityMap['login']
+    pageEntity = PageRouteManager.getRouteEntity('login')
     state: LoginPageState = {
         toOAuthPage: false,
         toHomePage: false
@@ -35,6 +35,8 @@ export default class LoginPage extends React.Component<
         super(props)
 
         later(() => {
+            console.log('--- login page entity ---')
+            console.log(this.pageEntity)
             loadPageToLayoutFrame(this.pageEntity)
 
             let args = HttpUrlUtils.getUrlData().args

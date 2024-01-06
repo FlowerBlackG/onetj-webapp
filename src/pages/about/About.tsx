@@ -5,7 +5,6 @@
 
 
 import React from 'react'
-import { pageRouteEntityMap } from '../../common/PageRoutes'
 import Version from '../../common/Version'
 import DateTimeUtils from '../../utils/DateTimeUtils'
 import './About.css'
@@ -14,6 +13,7 @@ import { later } from '../../utils/later'
 import { request } from '../../utils/request'
 import { loadPageToLayoutFrame } from '../../components/LayoutFrame/LayoutFrame'
 import TJApi from '../../utils/TJApi'
+import PageRouteManager from '../../common/PageRoutes'
 
 interface AboutPageState {
     [key: string]: any
@@ -22,7 +22,7 @@ interface AboutPageState {
 export default class AboutPage extends React.Component<
     any, AboutPageState
 > {
-    pageEntity = pageRouteEntityMap['about']
+    pageEntity = PageRouteManager.getRouteEntity('about')
 
     state: AboutPageState = {
         appVersionName: Version.tag,
@@ -48,7 +48,7 @@ export default class AboutPage extends React.Component<
                 className='onetj-logo'
             />
 
-            <div className='title'>OneTJ</div>
+            <div className='title'>OneTJ React WebApp</div>
 
             <div
                 style={{
@@ -70,7 +70,7 @@ export default class AboutPage extends React.Component<
 
                 <br />
 
-                <div>在信息办的指导下开发</div>
+                <div>在同济信息办的指导下开发</div>
 
             </div>
 
@@ -78,7 +78,7 @@ export default class AboutPage extends React.Component<
             <div
                 className='button-highlignt'
                 style={{
-                    marginTop: 24
+                    marginTop: 36
                 }}
 
                 onClick={() => {

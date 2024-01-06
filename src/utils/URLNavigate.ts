@@ -12,9 +12,11 @@ export default class URLNavigate {
     static to(url: string) {
         let loc = window.location
         
-        if (url.startsWith('/')) {
+        if (url.startsWith('/') && MacroDefines.WEB_ROOT_PATH !== '') {
             let ori = loc.origin + '/' + MacroDefines.WEB_ROOT_PATH
             loc.href = ori + url
+        } else if (url.startsWith('/')) {
+            loc.href = loc.origin + url
         } else {
             loc.href += url
         }

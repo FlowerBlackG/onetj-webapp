@@ -4,8 +4,8 @@
  */
 
 import React from "react"
-import { pageRouteEntityMap } from "../../common/PageRoutes"
 import { Navigate } from "react-router-dom"
+import PageRouteManager from "../../common/PageRoutes"
 
 
 type IndexPageState = {
@@ -14,7 +14,7 @@ type IndexPageState = {
 
 export default class IndexPage extends React.Component<any, IndexPageState> {
 
-    pageEntity = pageRouteEntityMap['']
+    pageEntity = PageRouteManager.getRouteEntity('')
 
     constructor(props: any) {
         super(props)

@@ -11,6 +11,7 @@ import { request } from "./request"
 import FormData from "form-data"
 import { message, notification } from "antd"
 import DataStore from "./DataStore"
+import { FreeKeyObject } from "./FreeKeyObject"
 
 interface TJApiTokenData {
     token: string
@@ -115,11 +116,16 @@ export default class TJApi {
     }
 
     public clearCache() {
-        // todo
+        if (this.tokenData !== null) {
+            this.tokenData.expireTimeSec = 0
+            this.tokenData.refreshTokenExpireSec = 0
+        }
+
+        DataStore.remove(TJApi.TOKEN_DATA_STORAGE_KEY)
     }
 
-    public storeTokenData() {
-        // todo
+    public storeTokenData(tokenData: TJApiTokenData) {
+        DataStore.put(TJApi.TOKEN_DATA_STORAGE_KEY, tokenData)
     }
 
     public getTokenData(): TJApiTokenData {
@@ -186,6 +192,37 @@ export default class TJApi {
 
         return 0
     }
+
+    oneTongjiApiProxy(
+        apiPath: string,
+        method: string = 'get'
+    ): Promise<any> {
+        return new Promise((resolve, reject) => {
+
+            let req = this.basicRequestParams(
+                TJApi.BASE_URL.concat(apiPath), 
+                method
+            )
+
+            request(req).then(res => {
+                if (this.checkError(res) !== 0) {
+                    reject(null)
+                    return
+                }
+
+                let data = res.data.data
+
+                resolve(data)
+            }).catch(err => {
+                this.solveError(
+                    'request err',
+                    err.message,
+                    TJApiFailCriticalLevel.Warning
+                )
+                reject(err.message)
+            })
+        })
+    }
     
     /* 开放平台 api 封装 */
     public code2token(code: string): Promise<null> {
@@ -223,7 +260,7 @@ export default class TJApi {
                         refreshTokenExpireSec: data.refresh_expires_in + currTimeSec - 10
                     }
 
-                    DataStore.put(TJApi.TOKEN_DATA_STORAGE_KEY, this.tokenData)
+                    this.storeTokenData(this.tokenData)
                     resolve(null)
                 }
 
@@ -280,36 +317,112 @@ export default class TJApi {
 
     getOneTongjiSchoolCalendar(): Promise<TJApiOneTongjiSchoolCalendar> {
         return new Promise((resolve, reject) => {
-
-            let req = this.basicRequestParams(
-                TJApi.BASE_URL.concat('/v1/rt/onetongji/school_calendar_current_term_calendar'), 
-                'get'
-            )
-
-            request(req).then(res => {
-                if (this.checkError(res) !== 0) {
-                    reject(null)
-                    return
-                }
-
-                let data = res.data.data
-
+            this.oneTongjiApiProxy(
+                '/v1/rt/onetongji/school_calendar_current_term_calendar'
+            ).then(res => {
                 let resObj: TJApiOneTongjiSchoolCalendar = {
-                    calendarId: data.schoolCalendar.id,
+                    calendarId: res.schoolCalendar.id,
                     year: '',
                     term: '',
-                    schoolWeek: data.week,
-                    simpleName: data.simpleName
+                    schoolWeek: res.week,
+                    simpleName: res.simpleName
                 }
                 resolve(resObj)
-            }).catch(err => {
-                this.solveError(
-                    'request err',
-                    err.message,
-                    TJApiFailCriticalLevel.Warning
-                )
-                reject(err.message)
-            })
+            }).catch(err => reject)
+        })
+    }
+
+    getOneTongjiUndergraduateScore(): Promise<FreeKeyObject> {
+        return new Promise((resolve, reject) => {
+            this.oneTongjiApiProxy(
+                '/v1/rt/onetongji/undergraduate_score'
+            ).then(res => {
+                resolve(res)
+            }).catch(err => reject)
+        })
+    }
+
+    getOneTongjiStudentTimetable(): Promise<FreeKeyObject[]> {
+        return new Promise((resolve, reject) => {
+            this.oneTongjiApiProxy(
+                '/v1/rt/onetongji/student_timetable'
+            ).then(res => {
+                resolve(res)
+            }).catch(err => reject)
+        })
+    }
+
+    getOneTongjiStudentExams(): Promise<FreeKeyObject[]> {
+        return new Promise((resolve, reject) => {
+            this.oneTongjiApiProxy(
+                '/v1/rt/onetongji/student_exams'
+            ).then(res => {
+                console.log('--- raw exam data ---')
+                console.log(res)
+                resolve(res.list)
+            }).catch(err => reject)
+        })
+    }
+
+    getOneTongjiCetScore(): Promise<FreeKeyObject[]> {
+        return new Promise((resolve, reject) => {
+            this.oneTongjiApiProxy(
+                '/v1/rt/onetongji/cet_score'
+            ).then(res => {
+                resolve(res.list)
+            }).catch(err => reject)
+        })
+    }
+
+    getTeachingSportsTestHealthData(): Promise<FreeKeyObject> {
+        return new Promise((resolve, reject) => {
+            this.oneTongjiApiProxy(
+                '/v1/rt/teaching_info/sports_test_health'
+            ).then(res => {
+                // todo
+            }).catch(err => reject)
+        })
+    }
+
+    getTeachingSportsTestData(): Promise<FreeKeyObject> {
+        return new Promise((resolve, reject) => {
+            this.oneTongjiApiProxy(
+                '/v1/rt/teaching_info/sports_test_data'
+            ).then(res => {
+                // todo
+            }).catch(err => reject)
+        })
+    }
+
+    getOneTongjiSchoolCalendarAllTermCalendar(): Promise<FreeKeyObject> {
+        return new Promise((resolve, reject) => {
+            this.oneTongjiApiProxy(
+                '/v1/rt/onetongji/school_calendar_all_term_calendar'
+            ).then(res => {
+                resolve(res)
+            }).catch(err => reject)
+        })
+    }
+
+    getOneTongjiMessageList(): Promise<FreeKeyObject[]> {
+        return new Promise((resolve, reject) => {
+            this.oneTongjiApiProxy(
+                '/v1/rt/onetongji/msg_list'
+            ).then(res => {
+                resolve(res.list)
+            }).catch(err => reject)
+        })
+    }
+
+    getOneTongjiMessageDetail(
+        id: number
+    ): Promise<FreeKeyObject> {
+        return new Promise((resolve, reject) => {
+            this.oneTongjiApiProxy(
+                '/v1/rt/onetongji/msg_detail?id='.concat(id.toString())
+            ).then(res => {
+                resolve(res)
+            }).catch(err => reject)
         })
     }
 }
