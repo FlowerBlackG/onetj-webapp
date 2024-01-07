@@ -92,8 +92,13 @@ export default class HomePage extends React.Component<
         },
         {
             title: '学期课表',
-            icon: 'https://canfish.oss-cn-shanghai.aliyuncs.com/shared/fluentui-emoji/color-svg/target/notebook_color.svg',
-            onClick: () => { this.navigateTo('/func/student-timetable/term-complete') }
+            icon: FluentUIEmojiProxy.colorSvg('notebook_color'),
+            onClick: () => { 
+                let termName = this.state.termInfo.simpleName
+                let targetUrl = '/func/student-timetable/term-complete?termName='
+                    .concat(termName)
+                this.navigateTo(targetUrl) 
+            }
         },
         {
             title: '我的成绩',
@@ -256,12 +261,24 @@ export default class HomePage extends React.Component<
     }
 
     functionEntryGrid(): React.ReactNode {
+
+        const cols = 4
+        const percentsPerCol = (98.0 / cols).toPrecision(3)
+
+        let gridTemplateColumns = ''
+        for (let i = 0; i < cols; i++) {
+            if (gridTemplateColumns !== '') {
+                gridTemplateColumns += ' '
+            }
+
+            gridTemplateColumns += percentsPerCol
+            gridTemplateColumns += '%'
+        }
+
         return <div
             style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                flexWrap: 'wrap',
+                display: 'grid',
+                gridTemplateColumns: gridTemplateColumns,
             }}
         > {
 
@@ -278,7 +295,7 @@ export default class HomePage extends React.Component<
                             width: '100%',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            flexDirection: 'column'
+                            flexDirection: 'column',
                         }}
                     >
 

@@ -49,7 +49,9 @@ export default class HttpUrlUtils {
                     continue
                 }
 
-                args.set(segments[0], segments[1])
+                let key = decodeURI(segments[0])
+                let value = decodeURI(segments[1])
+                args.set(key, value)
             }
 
         } while (0)

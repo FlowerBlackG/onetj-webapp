@@ -25,7 +25,7 @@
     font-size: 24px;
 }
 
-.button-highlignt {
+.button-highlight {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -45,11 +45,11 @@
     flex-shrink: 0;
 }
 
-.button-highlignt:active {
+.button-highlight:active {
     box-shadow: 0 2px 4px #f6d3657f;
 }
 
-.button-highlignt:hover {
+.button-highlight:hover {
     opacity: 1;
 }
 

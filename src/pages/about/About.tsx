@@ -76,7 +76,7 @@ export default class AboutPage extends React.Component<
 
 
             <div
-                className='button-highlignt'
+                className='button-highlight'
                 style={{
                     marginTop: 36
                 }}
@@ -87,6 +87,18 @@ export default class AboutPage extends React.Component<
                 }}
             >
                 获取源代码
+            </div>
+
+            <div
+                className='button-highlight'
+                style={{
+                    marginTop: 24
+                }}
+                onClick={() => {
+                    const w = window.open('https://guotuan.gardilily.com/guo-common/opensource-licenses.php')
+                }}
+            >
+                开源许可证
             </div>
 
 

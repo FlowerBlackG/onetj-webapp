@@ -12,6 +12,7 @@ import HomePage from "../pages/home/Home"
 import CetScorePage from "../pages/func/cet-score/CetScore"
 import MsgPublishShowPage from "../pages/msg-publish-show/MsgPublishShow"
 import StuExamEnquiriesPage from "../pages/func/stu-exam-enquiries/StuExamEnquiries"
+import StuTimetableTermCompletePage from "../pages/func/student-timetable/term-complete/StuTimetableTermComplete"
 
 
 /**
@@ -147,6 +148,12 @@ export default class PageRouteManager {
             path: 'func/stu-exam-enquiries',
             name: '考试安排',
             element: <StuExamEnquiriesPage />
+        },
+
+        {
+            path: 'func/student-timetable/term-complete',
+            name: '学期课表',
+            element: <StuTimetableTermCompletePage />
         },
 
         {
