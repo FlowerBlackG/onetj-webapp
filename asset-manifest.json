@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/onetj-webapp/static/css/main.f79bf219.css",
-    "main.js": "/onetj-webapp/static/js/main.4e01704c.js",
-    "index.html": "/onetj-webapp/index.html",
-    "main.f79bf219.css.map": "/onetj-webapp/static/css/main.f79bf219.css.map",
-    "main.4e01704c.js.map": "/onetj-webapp/static/js/main.4e01704c.js.map"
+    "main.css": "./static/css/main.f79bf219.css",
+    "main.js": "./static/js/main.9bc474bb.js",
+    "index.html": "./index.html",
+    "main.f79bf219.css.map": "./static/css/main.f79bf219.css.map",
+    "main.9bc474bb.js.map": "./static/js/main.9bc474bb.js.map"
   },
   "entrypoints": [
     "static/css/main.f79bf219.css",
-    "static/js/main.4e01704c.js"
+    "static/js/main.9bc474bb.js"
   ]
 }
