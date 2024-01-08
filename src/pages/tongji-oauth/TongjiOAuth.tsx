@@ -51,6 +51,9 @@ export default class TongjiOAuthPage extends React.Component<
         target += '&client_id='.concat(TJApi.CLIENT_ID)
         target += '&response_type=code'
 
+        console.log('--- tongji oauth redirect url ---')
+        console.log(target)
+
         let scopeList = TJApi.SCOPE_LIST
         let scope = ''
         for (let it of scopeList) {
@@ -69,6 +72,8 @@ export default class TongjiOAuthPage extends React.Component<
 
     processUrlData() {
         let urlData = HttpUrlUtils.getUrlData()
+console.log(urlData)
+        if (0) return
         if (urlData.args.size == 0) {
             this.redirectToTongjiLoginSite()
             return

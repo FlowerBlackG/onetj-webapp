@@ -13,6 +13,7 @@ import CetScorePage from "../pages/func/cet-score/CetScore"
 import MsgPublishShowPage from "../pages/msg-publish-show/MsgPublishShow"
 import StuExamEnquiriesPage from "../pages/func/stu-exam-enquiries/StuExamEnquiries"
 import StuTimetableTermCompletePage from "../pages/func/student-timetable/term-complete/StuTimetableTermComplete"
+import MyGradesPage from "../pages/func/my-grades/MyGrades"
 
 
 /**
@@ -148,6 +149,12 @@ export default class PageRouteManager {
             path: 'func/stu-exam-enquiries',
             name: '考试安排',
             element: <StuExamEnquiriesPage />
+        },
+
+        {
+            path: 'func/my-grades',
+            name: '我的成绩',
+            element: <MyGradesPage />
         },
 
         {

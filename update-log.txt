@@ -1,0 +1,23 @@
+version tag  : 1.0.0-rc1
+version code : 1
+build time   : 2024-01-08T22:45+08:00
+update log   :
+将 OneTJ Android App 的大多数功能迁移到 React Web App
+
+已经基本完成的功能：
++ 欢迎页（登录页）
++ 同济开放平台 OAuth 对接
++ 四六级
++ 学期课表
++ 我的成绩
++ 我的考试
++ 退出登录
++ 加讨论群
++ 新闻列表
++ 新闻详情
++ “关于”页
+
+已经基本完成的工具：
++ InfoCard
++ TjAPI (helper)
+--------------------------------

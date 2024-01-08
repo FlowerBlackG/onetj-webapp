@@ -62,8 +62,17 @@ export default class TJApi {
 
     static CLIENT_ID = "authorization-xxb-onedottongji-yuchen"
     static BASE_URL = "https://api.tongji.edu.cn"
-    static getOAuthRedirectUrl(): string {
-        return HttpUrlUtils.getUrlData().host.concat('/tongji-oauth')
+    static getOAuthRedirectUrl(encodeHashMark: boolean = true): string {
+        let urlData = HttpUrlUtils.getUrlData()
+
+        let res = urlData.host.concat('/onetj-webapp/')
+            .concat(encodeHashMark ? '%23' : '#') // "%23" 即 "#"
+            .concat('/tongji-oauth')
+
+        console.log('--- get oauth redir url ---')
+        console.log(res)
+        console.log(HttpUrlUtils.getUrlData())
+        return res
     }
 
     static CODE2TOKEN_URL = "$BASE_URL/v1/token"
@@ -228,11 +237,12 @@ export default class TJApi {
     public code2token(code: string): Promise<null> {
 
         let postBody = new URLSearchParams({})
+        console.log('code: ' + code)
 
         postBody.append('grant_type', 'authorization_code')
         postBody.append('client_id', TJApi.CLIENT_ID)
         postBody.append('code', code)
-        postBody.append('redirect_uri', TJApi.getOAuthRedirectUrl())
+        postBody.append('redirect_uri', TJApi.getOAuthRedirectUrl(false))
         
         return new Promise((resolve, reject) => {
             request({
@@ -335,7 +345,7 @@ export default class TJApi {
     getOneTongjiUndergraduateScore(): Promise<FreeKeyObject> {
         return new Promise((resolve, reject) => {
             this.oneTongjiApiProxy(
-                '/v1/rt/onetongji/undergraduate_score'
+                '/v1/rt/onetongji/undergraduate_score?calendarId=-1'
             ).then(res => {
                 resolve(res)
             }).catch(err => reject)

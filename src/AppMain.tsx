@@ -5,7 +5,7 @@
 
 import axios from 'axios'
 import React from 'react'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, HashRouter, Route, Routes } from 'react-router-dom'
 import MacroDefines from './common/MacroDefines'
 import PageRouteManager from './common/PageRoutes'
 
@@ -17,7 +17,7 @@ export default class AppMain extends React.Component {
     }
 
     override render(): React.ReactNode {
-        return <BrowserRouter basename={
+        return <HashRouter basename={
             MacroDefines.WEB_ROOT_PATH
         }>
             <Routes>
@@ -62,6 +62,6 @@ export default class AppMain extends React.Component {
                     </div>
                 }/>
             </Routes>
-        </BrowserRouter>
+        </HashRouter>
     }
 }

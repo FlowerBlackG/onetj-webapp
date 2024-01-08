@@ -16,6 +16,7 @@ import Random from "../../../../utils/Random";
 import FluentUIEmojiProxy from "../../../../utils/FluentUIEmojiProxy";
 import { FreeKeyObject } from "../../../../utils/FreeKeyObject";
 import { InfoCardBuilder } from "../../../../components/InfoCard/InfoCard";
+import { later } from "../../../../utils/later";
 
 interface StuTimetableTermCompletePageState {
     loading: boolean
@@ -41,47 +42,67 @@ export default function StuTimetableTermCompletePage() {
     )
 
     const [state, setState] = useState<StuTimetableTermCompletePageState>({
-        loading: false,
+        loading: true,
         courseDataList: []
     })
 
     useConstructor(onConstruct)
     function onConstruct() {
+        
         loadPageToLayoutFrame(pageEntity)
-        loadData()
-
+        loadData()    
+        
         setLayoutFrameTitle(
             '总课表：' 
             + HttpUrlUtils.getUrlData().args.get('termName')!
         )
     }
-    
+
     function loadData() {
         TJApi.instance().getOneTongjiStudentTimetable().then(res => {
             state.courseDataList = res
-        }).catch(err => {
+        }).catch(err => {   
             // do nothing.
-        }).finally(() => { 
+        }).finally(() => {
             state.loading = false
-            setState(state) 
+            setState({...state})
         })
+    }
+
+    function getRoomName(obj: any): string {
+        let res = obj.roomLable
+        if (res === '' || res === null || res === undefined) {
+            res = obj.classRoomI18n
+        }
+
+        if (res === null || res === undefined) {
+            res = ''
+        }
+
+        return res
     }
 
     function courseCardList(): React.ReactNode {
         return <div
             style={{
-                background: '#7f77'
+                
             }}
         >
             {
                 state.courseDataList.map(it => {
                     let card = InfoCardBuilder.new()
+                    console.log(it)
                     
-                    card.addInfo('课号', it.classCode)
+                    card.setTitle(it.courseName)
+                        .addInfo('课号', it.classCode)
                         .addInfo('教师', it.teacherName)
-                        .addInfo('学分', '?')
-                        .addInfo('地点', '?') // todo
+                        .addInfo('学分', it.credits)
+                        .addInfo('地点', getRoomName(it))
                         .addInfo('时间', it.classTime)
+                        .setTopMargin(12)
+                        .setLeftMargin(12)
+                        .setRightMargin(12)
+                        .setIconUrl(getCourseIcon())
                     
                     return card.build()
                 })

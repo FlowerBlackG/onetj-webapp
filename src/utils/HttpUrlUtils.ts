@@ -11,6 +11,9 @@ interface HttpUrlData {
     path: string
 
     args: Map<string, string>
+
+    hasHashText: boolean
+    hashText: string
     
 }
 
@@ -21,29 +24,40 @@ export default class HttpUrlUtils {
 
 
     static getUrlData(): HttpUrlData {
-        let curUrl = window.document.location.href
-        let pathName = window.document.location.pathname
-        let pos = curUrl.indexOf(pathName)
 
-        let hostPath = curUrl.substring(0, pos)
+        let fullUrl = window.document.location.href
+        let host = window.document.location.host
+        let fullPath = fullUrl.substring(
+            host.length + fullUrl.indexOf(host)
+        )
+
+        let pos = fullUrl.indexOf(fullPath)
+        let hostPath = fullUrl.substring(0, pos)
 
         let args = new Map<string, string>()
 
-        do { // do {...} while (0)
+        let hashText = ''
+        let idxOfHashMark = fullUrl.indexOf('#')
+        let hasHashText = idxOfHashMark !== -1
 
-            if (pos + pathName.length >= curUrl.length) {
-                break
+        if (hasHashText) {
+            hashText = fullUrl.substring(idxOfHashMark + 1)
+        }
+// todo: maybe buggy
+        let argsUrl = ''
+        let idxOfQuestMark = fullUrl.indexOf('?')
+        if (idxOfQuestMark !== -1) {
+            if (hasHashText) {
+                argsUrl = fullUrl.substring(idxOfQuestMark + 1, idxOfHashMark)
+            } else {
+                argsUrl = fullUrl.substring(idxOfQuestMark + 1)
             }
-            
-            let argsString = curUrl.substring(pos + pathName.length)
+        }
 
-            if (argsString.charAt(0) !== '?') {
-                break
-            }
-
-            let rawArgPairs = argsString.substring(1).split('&')
-            for (let rawArgPair of rawArgPairs) {
-                let segments = rawArgPair.split('=')
+        if (argsUrl.length > 0) {
+            let argPairs = argsUrl.split('&')
+            for (let it of argPairs) {
+                let segments = it.split('=')
 
                 if (segments.length < 2) {
                     continue
@@ -53,14 +67,21 @@ export default class HttpUrlUtils {
                 let value = decodeURI(segments[1])
                 args.set(key, value)
             }
+        }
 
-        } while (0)
-        
+        let pathName = fullPath
+        if (idxOfQuestMark !== -1) {
+            pathName = fullUrl.substring(pos, idxOfQuestMark)
+        } else if (hasHashText) {
+            pathName = fullUrl.substring(pos, idxOfHashMark)
+        }
 
         return {
             host: hostPath,
             path: pathName,
-            args: args
+            args: args,
+            hasHashText: hasHashText,
+            hashText: hashText
         }
     }
 }

@@ -1,7 +1,7 @@
 {
     "name": "onetj-webapp",
     "version": "0.1.0",
-    "private": true,
+
     "dependencies": {
         "@ant-design/icons": "^5.2.6",
         "@testing-library/jest-dom": "^5.14.1",
@@ -28,6 +28,8 @@
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
+        "predeploy": "yarn && yarn build",
+        "deploy": "gh-pages -d build",
         "test": "react-scripts test",
         "eject": "react-scripts eject"
     },
@@ -49,5 +51,12 @@
             "last 1 safari version"
         ]
     },
+
+
+    "devDependencies": {
+        "gh-pages": "^6.1.1"
+    },
+
+    "private": true,
     "homepage": "."
 }

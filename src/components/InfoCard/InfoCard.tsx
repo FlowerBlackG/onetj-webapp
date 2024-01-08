@@ -25,6 +25,7 @@ export class InfoCardBuilder {
     marginRight = 0
     marginTop = 0
     marginBottom = 0
+    hasBorder = true
 
     static new(): InfoCardBuilder {
         return new InfoCardBuilder
@@ -76,24 +77,35 @@ export class InfoCardBuilder {
         return this
     }
 
+    setHasBorder(b: boolean): InfoCardBuilder {
+        this.hasBorder = b
+        return this
+    }
+
     build(): React.ReactNode {
+
+        let containerStyle: React.CSSProperties = {
+            position: 'relative',
+            borderRadius: 16,
+            boxSizing: 'border-box',
+            padding: 8,
+            marginLeft: this.marginLeft,
+            marginRight: this.marginRight,
+            marginTop: this.marginTop,
+            marginBottom: this.marginBottom,
+    
+            display: 'flex',
+            flexDirection: 'row',
+    
+            transition: '0.1s'
+        }
+
+        if (this.hasBorder) {
+            containerStyle.border = '1px solid #7777'
+        }
+
         return <div
-            style={{
-                position: 'relative',
-                border: '1px solid #7777',
-                borderRadius: 16,
-                boxSizing: 'border-box',
-                padding: 8,
-                marginLeft: this.marginLeft,
-                marginRight: this.marginRight,
-                marginTop: this.marginTop,
-                marginBottom: this.marginBottom,
-
-                display: 'flex',
-                flexDirection: 'row',
-
-                transition: '0.1s'
-            }}
+            style={ containerStyle }
 
             className='info-card'
         >
