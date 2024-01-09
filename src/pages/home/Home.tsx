@@ -3,17 +3,18 @@
  * 创建于2024年1月5日 江西省上饶市玉山县
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import './Home.css'
 import { later } from '../../utils/later';
 import { loadPageToLayoutFrame } from '../../components/LayoutFrame/LayoutFrame';
 import TJApi, { TJApiOneTongjiSchoolCalendar, TJApiStudentInfo } from '../../utils/TJApi';
 import { Modal, message } from 'antd';
-import { Navigate, redirect, redirectDocument } from 'react-router-dom';
+import { Navigate, redirect, redirectDocument, useNavigate } from 'react-router-dom';
 import URLNavigate from '../../utils/URLNavigate';
 import PageRouteManager from '../../common/PageRoutes';
 import { InfoCardBuilder } from '../../components/InfoCard/InfoCard';
 import FluentUIEmojiProxy from '../../utils/FluentUIEmojiProxy';
+import { useConstructor } from '../../utils/react-functional-helpers';
 
 interface HomePageState {
     userInfo: TJApiStudentInfo
@@ -37,13 +38,11 @@ interface CommonMsgPublishData {
     date: string
 }
 
-export default class HomePage extends React.Component<
-    any, HomePageState
-> {
+export default function HomePage() {
 
-    pageEntity = PageRouteManager.getRouteEntity('home')
+    const pageEntity = PageRouteManager.getRouteEntity('home')
 
-    state: HomePageState = {
+    const [state, setState] = useState<HomePageState>({
         userInfo: {
             userId: '...',
             name: '谢宇菲',
@@ -66,59 +65,62 @@ export default class HomePage extends React.Component<
 
         onNavigateTo: false,
         navigateToDestination: ''
-    }
+    })
 
-    constructor(props: any) {
-        super(props)
+    const navigate = useNavigate()
+
+    useConstructor(constructor)
+    function constructor() {
 
         later(() => {
-            loadPageToLayoutFrame(this.pageEntity)
-            this.loadUserBasicData()
-            this.loadTermBasicInfo()
-            this.loadCommonMsgPublish() // 首页新闻
-
-            TJApi.instance().getOneTongjiCetScore()
+            loadPageToLayoutFrame(pageEntity)
+            loadUserBasicData()
+            loadTermBasicInfo()
+            loadCommonMsgPublish() // 首页新闻
         })
     }
 
 
     /* 功能金刚位。 */
 
-    oneTJFunctions: OneTJFunctionEntry[] = [
+    const oneTJFunctions: OneTJFunctionEntry[] = [
         {
             title: '今日课表',
             icon: 'https://canfish.oss-cn-shanghai.aliyuncs.com/shared/fluentui-emoji/color-svg/target/alarm_clock_color.svg',
-            onClick: () => { this.navigateTo('/func/student-timetable/single-day') }
+            onClick: () => { navigateTo('/func/student-timetable/single-day') }
         },
         {
             title: '学期课表',
             icon: FluentUIEmojiProxy.colorSvg('notebook_color'),
             onClick: () => { 
-                let termName = this.state.termInfo.simpleName
-                let targetUrl = '/func/student-timetable/term-complete?termName='
-                    .concat(termName)
-                this.navigateTo(targetUrl) 
+                let termName = state.termInfo.simpleName
+                let targetUrl = '/func/student-timetable/term-complete'
+                    
+                navigate({ 
+                    pathname: targetUrl,
+                    search: '?termName='.concat(termName)
+                 })
             }
         },
         {
             title: '我的成绩',
             icon: 'https://canfish.oss-cn-shanghai.aliyuncs.com/shared/fluentui-emoji/color-svg/target/anguished_face_color.svg',
-            onClick: () => { this.navigateTo('/func/my-grades') }
+            onClick: () => { navigate({ pathname: '/func/my-grades' }) }
         },
         {
             title: '我的考试',
             icon: 'https://canfish.oss-cn-shanghai.aliyuncs.com/shared/fluentui-emoji/color-svg/target/memo_color.svg',
-            onClick: () => { this.navigateTo('/func/stu-exam-enquiries') }
+            onClick: () => { navigateTo('/func/stu-exam-enquiries') }
         },
         {
             title: '四六级',
             icon: FluentUIEmojiProxy.colorSvg('money_with_wings_color'),
-            onClick: () => { this.navigateTo('/func/cet-score') }
+            onClick: () => { navigateTo('/func/cet-score') }
         },
         {
             title: '体测体锻',
             icon: FluentUIEmojiProxy.colorSvg('badminton_color'),
-            onClick: () => { this.navigateTo('/func/sports-test-data') }
+            onClick: () => { navigateTo('/func/sports-test-data') }
         },
         {
             title: '全校课表',
@@ -138,7 +140,10 @@ export default class HomePage extends React.Component<
                     onCancel: () => {},
                     onOk: () => {
                         TJApi.instance().clearCache()
-                        URLNavigate.to('/')
+                        navigate({
+                            pathname: '/login'
+                        })
+                        
                     }
                     
                 })    
@@ -164,34 +169,33 @@ export default class HomePage extends React.Component<
         {
             title: '关于App',
             icon: FluentUIEmojiProxy.colorSvg('teddy_bear_color'),
-            onClick: () => { this.navigateTo('/about') }
+            onClick: () => { navigateTo('/about') }
         }
     ]
 
-    navigateTo(path: string) {
-        this.state.navigateToDestination = path
-        this.setState({
-            onNavigateTo: true
+    function navigateTo(path: string) {
+        state.navigateToDestination = path
+        state.onNavigateTo = true
+        setState({
+            ...state
         })
     }
 
-    loadUserBasicData() {
+    function loadUserBasicData() {
         TJApi.instance().getStudentInfo().then(res => {
-            this.setState({
-                userInfo: res
-            })
+            state.userInfo = res
+            setState({...state})
         }).catch(err => {})
     }
 
-    loadTermBasicInfo() {
+    function loadTermBasicInfo() {
         TJApi.instance().getOneTongjiSchoolCalendar().then(res => {
-            this.setState({
-                termInfo: res
-            })
+            state.termInfo = res
+            setState({...state})
         }).catch(err => {})
     }
 
-    loadCommonMsgPublish() {
+    function loadCommonMsgPublish() {
         TJApi.instance().getOneTongjiMessageList().then(res => {
             let msgs = [] as CommonMsgPublishData[]
             for (let it of res) {
@@ -202,21 +206,18 @@ export default class HomePage extends React.Component<
                 })
             }
 
-            this.setState({
-                commonMsgPublishList: msgs
-            })
+            state.commonMsgPublishList = msgs
+            setState({...state})
 
-            console.log('--msgs--')
-            console.log(msgs)
         })
     }
     
 
-    userDataCard(): React.ReactNode {
+    function userDataCard(): React.ReactNode {
 
         let avatarUrl = 'https://canfish.oss-cn-shanghai.aliyuncs.com/shared/fluentui-emoji/color-svg/target/smiling_face_with_hearts_color.svg'
 
-        if (this.state.userInfo.gender === 1) { // male
+        if (state.userInfo.gender === 1) { // male
             avatarUrl = 'https://canfish.oss-cn-shanghai.aliyuncs.com/shared/fluentui-emoji/color-svg/target/sleeping_face_color.svg'
         }
 
@@ -251,16 +252,16 @@ export default class HomePage extends React.Component<
                     fontSize: 24
                 }}
             >
-                {this.state.userInfo.name} {this.state.userInfo.userId}
+                {state.userInfo.name} {state.userInfo.userId}
                 <br />
-                {this.state.userInfo.deptName}
+                {state.userInfo.deptName}
                 <br />
-                {this.state.userInfo.currentGrade}级
+                {state.userInfo.currentGrade}级
             </div>
         </div>
     }
 
-    functionEntryGrid(): React.ReactNode {
+    function functionEntryGrid(): React.ReactNode {
 
         const cols = 4
         const percentsPerCol = (98.0 / cols).toPrecision(3)
@@ -282,7 +283,7 @@ export default class HomePage extends React.Component<
             }}
         > {
 
-            this.oneTJFunctions.map((entry) => {
+            oneTJFunctions.map((entry) => {
 
                 return <div
                     className='function-card-container'
@@ -310,7 +311,7 @@ export default class HomePage extends React.Component<
         } </div>
     }
 
-    messageList(): React.ReactNode {
+    function messageList(): React.ReactNode {
         return <div
             style={{
                 display: 'flex',
@@ -319,15 +320,16 @@ export default class HomePage extends React.Component<
                 margin: '0 auto'
             }}
         > {
-            this.state.commonMsgPublishList.map(msg => {
+            state.commonMsgPublishList.map(msg => {
                 return <div
                     className='msg-card'
                     onClick={() => {
                         let id = msg.id
-                        let destPath = '/msg-publish-show?msgid='.concat(id.toString())
-                        this.setState({
-                            onNavigateTo: true,
-                            navigateToDestination: destPath
+                        let destPath = '/msg-publish-show'
+                        let search = '?msgid='.concat(id.toString())
+                        navigate({
+                            pathname: destPath,
+                            search: search
                         })
                     }}
                 >
@@ -360,49 +362,51 @@ export default class HomePage extends React.Component<
         } </div>
     }
 
-    override render(): React.ReactNode {
 
-        if (this.state.onNavigateTo) {
-            return <Navigate to={ this.state.navigateToDestination } />
-        }
+    /* render */
 
-        return <div className='container'>
 
-            <div
-                style={{
-                    fontSize: 22,
-                    width: '100%',
-                    textAlign: 'center',
-                    flexShrink: 0
-                }}
-            >
-                <div style={{ height: 24 }} />
-
-                { this.userDataCard() }
-
-                <div style={{ height: 24 }} />
-                
-                { this.state.termInfo.simpleName } 第{ this.state.termInfo.schoolWeek }周
-            </div>
-
-            <div style={{ height: 24, flexShrink: 0 }} />
-
-            { /* 功能与通知区域。 */ }
-            <div
-                className='overflow-y-overlay'
-                style={{ flexGrow: 1 }}
-            >
-
-                { /* 功能入口。 */ }
-                { this.functionEntryGrid() }
-            
-                { /* 通知入口。 */ }
-                { this.messageList() }
-
-                <div style={{ height: 12 }} />
-            </div>
-
-        </div>
+    if (state.onNavigateTo) {
+        return <Navigate to={ state.navigateToDestination } />
     }
+
+    return <div className='container'>
+
+        <div
+            style={{
+                fontSize: 22,
+                width: '100%',
+                textAlign: 'center',
+                flexShrink: 0
+            }}
+        >
+            <div style={{ height: 24 }} />
+
+            { userDataCard() }
+
+            <div style={{ height: 24 }} />
+            
+            { state.termInfo.simpleName } 第{ state.termInfo.schoolWeek }周
+        </div>
+
+        <div style={{ height: 24, flexShrink: 0 }} />
+
+        { /* 功能与通知区域。 */ }
+        <div
+            className='overflow-y-overlay'
+            style={{ flexGrow: 1 }}
+        >
+
+            { /* 功能入口。 */ }
+            { functionEntryGrid() }
+        
+            { /* 通知入口。 */ }
+            { messageList() }
+
+            <div style={{ height: 12 }} />
+        </div>
+
+    </div>
+
 
 }

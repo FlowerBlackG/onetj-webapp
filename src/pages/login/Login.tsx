@@ -35,8 +35,7 @@ export default class LoginPage extends React.Component<
         super(props)
 
         later(() => {
-            console.log('--- login page entity ---')
-            console.log(this.pageEntity)
+            
             loadPageToLayoutFrame(this.pageEntity)
 
             let args = HttpUrlUtils.getUrlData().args

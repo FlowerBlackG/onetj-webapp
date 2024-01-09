@@ -26,6 +26,9 @@ export default class HttpUrlUtils {
     static getUrlData(): HttpUrlData {
 
         let fullUrl = window.document.location.href
+
+        let urlObj = new URL(fullUrl)
+
         let host = window.document.location.host
         let fullPath = fullUrl.substring(
             host.length + fullUrl.indexOf(host)
@@ -43,31 +46,12 @@ export default class HttpUrlUtils {
         if (hasHashText) {
             hashText = fullUrl.substring(idxOfHashMark + 1)
         }
-// todo: maybe buggy
-        let argsUrl = ''
+        
         let idxOfQuestMark = fullUrl.indexOf('?')
-        if (idxOfQuestMark !== -1) {
-            if (hasHashText) {
-                argsUrl = fullUrl.substring(idxOfQuestMark + 1, idxOfHashMark)
-            } else {
-                argsUrl = fullUrl.substring(idxOfQuestMark + 1)
-            }
-        }
 
-        if (argsUrl.length > 0) {
-            let argPairs = argsUrl.split('&')
-            for (let it of argPairs) {
-                let segments = it.split('=')
-
-                if (segments.length < 2) {
-                    continue
-                }
-
-                let key = decodeURI(segments[0])
-                let value = decodeURI(segments[1])
-                args.set(key, value)
-            }
-        }
+        urlObj.searchParams.forEach((value, key) => {
+            args.set(key, value)
+        })
 
         let pathName = fullPath
         if (idxOfQuestMark !== -1) {

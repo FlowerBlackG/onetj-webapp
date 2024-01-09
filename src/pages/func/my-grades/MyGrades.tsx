@@ -142,7 +142,6 @@ export default function MyGradesPage() {
             {
                 data.creditInfo.map((it: any) => {
                     let card = InfoCardBuilder.new()
-                    console.log(it)
             
                     let [gradeEngCh, gradeIcon] = gradePoint2GradeEngChAndIcon(it.gradePoint)
             
@@ -164,7 +163,6 @@ export default function MyGradesPage() {
 
     function allTermGradeInfo(): ReactNode {
 
-        console.log(state.gradeData)
         let term = state.gradeData.term
         if (term === null || term === undefined) {
             return [''] // 还没有过成绩。

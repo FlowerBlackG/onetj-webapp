@@ -17,6 +17,7 @@ import FluentUIEmojiProxy from "../../../../utils/FluentUIEmojiProxy";
 import { FreeKeyObject } from "../../../../utils/FreeKeyObject";
 import { InfoCardBuilder } from "../../../../components/InfoCard/InfoCard";
 import { later } from "../../../../utils/later";
+import { useSearchParams } from "react-router-dom";
 
 interface StuTimetableTermCompletePageState {
     loading: boolean
@@ -41,6 +42,8 @@ export default function StuTimetableTermCompletePage() {
         'func/student-timetable/term-complete'
     )
 
+    const [searchParams, setSearchParams] = useSearchParams()
+
     const [state, setState] = useState<StuTimetableTermCompletePageState>({
         loading: true,
         courseDataList: []
@@ -50,11 +53,11 @@ export default function StuTimetableTermCompletePage() {
     function onConstruct() {
         
         loadPageToLayoutFrame(pageEntity)
-        loadData()    
+        loadData()
         
         setLayoutFrameTitle(
             '总课表：' 
-            + HttpUrlUtils.getUrlData().args.get('termName')!
+            + searchParams.get('termName')
         )
     }
 
@@ -91,7 +94,6 @@ export default function StuTimetableTermCompletePage() {
             {
                 state.courseDataList.map(it => {
                     let card = InfoCardBuilder.new()
-                    console.log(it)
                     
                     card.setTitle(it.courseName)
                         .addInfo('课号', it.classCode)

@@ -5,15 +5,16 @@
  * 创建于2024年1月5日 江西省上饶市玉山县
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { later } from "../../utils/later";
 import { globalData } from "../../common/GlobalData";
 import { loadPageToLayoutFrame } from "../../components/LayoutFrame/LayoutFrame";
 import HttpUrlUtils from "../../utils/HttpUrlUtils";
-import { Navigate } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
 import TJApi from "../../utils/TJApi";
 import { message } from "antd";
 import PageRouteManager from "../../common/PageRoutes";
+import { useConstructor } from "../../utils/react-functional-helpers";
 
 
 interface TongjiOAuthPageState {
@@ -21,28 +22,23 @@ interface TongjiOAuthPageState {
     backToLogin: boolean
 }
 
-export default class TongjiOAuthPage extends React.Component<
-    any, TongjiOAuthPageState
-> {
-    pageEntity = PageRouteManager.getRouteEntity('tongji-oauth')
+export default function TongjiOAuthPage() {
+    const pageEntity = PageRouteManager.getRouteEntity('tongji-oauth')
 
-    state: TongjiOAuthPageState = {
+    const [state, setState] = useState<TongjiOAuthPageState>({
         errorMsg: '',
         backToLogin: false
+    })
+
+    function constructor() {
+   
+        loadPageToLayoutFrame(pageEntity)
+        processUrlData()
     }
 
-    constructor(props: any) {
-        super(props)
+    useConstructor(constructor)
 
-        later(() => {
-            loadPageToLayoutFrame(this.pageEntity)
-            this.processUrlData()
-        })
-
-        
-    }
-
-    redirectToTongjiLoginSite() {
+    function redirectToTongjiLoginSite() {
         let target = TJApi.BASE_URL.concat(
             '/keycloak/realms/OpenPlatform/protocol/openid-connect/auth'
         )
@@ -50,9 +46,6 @@ export default class TongjiOAuthPage extends React.Component<
         target += '?redirect_uri='.concat(TJApi.getOAuthRedirectUrl())
         target += '&client_id='.concat(TJApi.CLIENT_ID)
         target += '&response_type=code'
-
-        console.log('--- tongji oauth redirect url ---')
-        console.log(target)
 
         let scopeList = TJApi.SCOPE_LIST
         let scope = ''
@@ -70,12 +63,11 @@ export default class TongjiOAuthPage extends React.Component<
         window.location.href = target
     }
 
-    processUrlData() {
+    function processUrlData() {
         let urlData = HttpUrlUtils.getUrlData()
-console.log(urlData)
-        if (0) return
+
         if (urlData.args.size == 0) {
-            this.redirectToTongjiLoginSite()
+            redirectToTongjiLoginSite()
             return
         }
 
@@ -87,15 +79,23 @@ console.log(urlData)
         }
 
         if (error !== undefined) {
-            this.state.errorMsg = error
-            this.setState({ errorMsg: error })
+            state.errorMsg = error
+            setState({...state})
         }
+
+        console.log('--- href ---')
+        console.log(window.location.href)
 
         if (code !== undefined) {
             TJApi.instance().code2token(code).then(res => {
 
-                this.state.backToLogin = true
-                this.setState({ backToLogin: true })
+                // 删掉 url 里的查询参数。
+                let urlObj = new URL(window.document.location.href)
+                let newHref = urlObj.href.replace(urlObj.search, '')
+                window.history.replaceState('', '', newHref)
+
+                state.backToLogin = true
+                setState({ ...state })
 
             }).catch(err => {
                 
@@ -104,16 +104,16 @@ console.log(urlData)
         }
     }
 
-    override render(): React.ReactNode {
+    /* render */
 
-        if (this.state.errorMsg !== '') {
-            return this.state.errorMsg
-        }
-
-        if (this.state.backToLogin) {
-            return <Navigate to={'/login'} />
-        }
-
-        return 'please wait...' // todo    
+    if (state.errorMsg !== '') {
+        return state.errorMsg
     }
+
+    if (state.backToLogin) {
+        return <Navigate to={'/login'} />
+    }
+
+    return 'please wait...' // todo    
+    
 }

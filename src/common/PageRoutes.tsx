@@ -181,7 +181,7 @@ export default class PageRouteManager {
     protected static _instance: PageRouteManager
 
     public static getInstance(): PageRouteManager {
-        console.log(PageRouteManager._instance)
+        
         if (!PageRouteManager._instance) {
             PageRouteManager._instance = new PageRouteManager()
         }

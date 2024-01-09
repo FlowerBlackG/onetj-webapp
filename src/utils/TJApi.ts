@@ -69,9 +69,6 @@ export default class TJApi {
             .concat(encodeHashMark ? '%23' : '#') // "%23" 即 "#"
             .concat('/tongji-oauth')
 
-        console.log('--- get oauth redir url ---')
-        console.log(res)
-        console.log(HttpUrlUtils.getUrlData())
         return res
     }
 
@@ -237,7 +234,6 @@ export default class TJApi {
     public code2token(code: string): Promise<null> {
 
         let postBody = new URLSearchParams({})
-        console.log('code: ' + code)
 
         postBody.append('grant_type', 'authorization_code')
         postBody.append('client_id', TJApi.CLIENT_ID)
@@ -367,8 +363,7 @@ export default class TJApi {
             this.oneTongjiApiProxy(
                 '/v1/rt/onetongji/student_exams'
             ).then(res => {
-                console.log('--- raw exam data ---')
-                console.log(res)
+                
                 resolve(res.list)
             }).catch(err => reject)
         })
