@@ -9,14 +9,15 @@ import { later } from '../../utils/later';
 import { loadPageToLayoutFrame } from '../../components/LayoutFrame/LayoutFrame';
 import TJApi, { TJApiOneTongjiSchoolCalendar, TJApiStudentInfo } from '../../utils/TJApi';
 import { Modal, message } from 'antd';
-import { Navigate, redirect, redirectDocument, useNavigate } from 'react-router-dom';
+import { Navigate, redirect, redirectDocument, useNavigate, useSearchParams } from 'react-router-dom';
 import URLNavigate from '../../utils/URLNavigate';
 import PageRouteManager from '../../common/PageRoutes';
 import { InfoCardBuilder } from '../../components/InfoCard/InfoCard';
 import FluentUIEmojiProxy from '../../utils/FluentUIEmojiProxy';
 import { useConstructor } from '../../utils/react-functional-helpers';
+import { OneTJFunctions } from './OneTJFunctions';
 
-interface HomePageState {
+export interface HomePageState {
     userInfo: TJApiStudentInfo
     termInfo: TJApiOneTongjiSchoolCalendar
 
@@ -45,7 +46,7 @@ export default function HomePage() {
     const [state, setState] = useState<HomePageState>({
         userInfo: {
             userId: '...',
-            name: '谢宇菲',
+            name: '余小庆',
             gender: 0,
             deptName: '...',
             secondDeptName: '',
@@ -67,10 +68,23 @@ export default function HomePage() {
         navigateToDestination: ''
     })
 
+    function getState() {
+        return state
+    }
+
+    const [searchParams, setSearchParams] = useSearchParams()
+
+    function getSearchParams() { return searchParams }
+
     const navigate = useNavigate()
 
     useConstructor(constructor)
     function constructor() {
+
+        OneTJFunctions.loadHooks(
+            navigate, navigateTo, getState,
+            getSearchParams, setSearchParams
+        )
 
         later(() => {
             loadPageToLayoutFrame(pageEntity)
@@ -78,100 +92,8 @@ export default function HomePage() {
             loadTermBasicInfo()
             loadCommonMsgPublish() // 首页新闻
         })
+
     }
-
-
-    /* 功能金刚位。 */
-
-    const oneTJFunctions: OneTJFunctionEntry[] = [
-        {
-            title: '今日课表',
-            icon: 'https://canfish.oss-cn-shanghai.aliyuncs.com/shared/fluentui-emoji/color-svg/target/alarm_clock_color.svg',
-            onClick: () => { navigateTo('/func/student-timetable/single-day') }
-        },
-        {
-            title: '学期课表',
-            icon: FluentUIEmojiProxy.colorSvg('notebook_color'),
-            onClick: () => { 
-                let termName = state.termInfo.simpleName
-                let targetUrl = '/func/student-timetable/term-complete'
-                    
-                navigate({ 
-                    pathname: targetUrl,
-                    search: '?termName='.concat(termName)
-                 })
-            }
-        },
-        {
-            title: '我的成绩',
-            icon: 'https://canfish.oss-cn-shanghai.aliyuncs.com/shared/fluentui-emoji/color-svg/target/anguished_face_color.svg',
-            onClick: () => { navigate({ pathname: '/func/my-grades' }) }
-        },
-        {
-            title: '我的考试',
-            icon: 'https://canfish.oss-cn-shanghai.aliyuncs.com/shared/fluentui-emoji/color-svg/target/memo_color.svg',
-            onClick: () => { navigateTo('/func/stu-exam-enquiries') }
-        },
-        {
-            title: '四六级',
-            icon: FluentUIEmojiProxy.colorSvg('money_with_wings_color'),
-            onClick: () => { navigateTo('/func/cet-score') }
-        },
-        {
-            title: '体测体锻',
-            icon: FluentUIEmojiProxy.colorSvg('badminton_color'),
-            onClick: () => { navigateTo('/func/sports-test-data') }
-        },
-        {
-            title: '全校课表',
-            icon: FluentUIEmojiProxy.colorSvg('speedboat_color'),
-            onClick: () => { message.error('敬请期待') }
-        },
-        {
-            title: '退出登录',
-            icon: FluentUIEmojiProxy.colorSvg('wilted_flower_color'),
-            onClick: () => { 
-                Modal.warn({
-                    title: '真的要退出么？',
-                    closable: true,
-                    maskClosable: true,
-                    centered: true,
-                    okText: '退出',
-                    onCancel: () => {},
-                    onOk: () => {
-                        TJApi.instance().clearCache()
-                        navigate({
-                            pathname: '/login'
-                        })
-                        
-                    }
-                    
-                })    
-            }
-        },
-        {
-            title: '加讨论群',
-            icon: FluentUIEmojiProxy.colorSvg('zany_face_color'),
-            onClick: () => { 
-                Modal.info({
-                    title: '加入QQ群',
-                    closable: true,
-                    content: <div>
-                        <img src='https://canfish.oss-cn-shanghai.aliyuncs.com/app/onetj-webapp/qq_group_qrcode.webp' width={160} />
-                        群号：322324184
-                    </div> ,
-                    centered: true,
-                    maskClosable: true,
-                    
-                })    
-            }
-        },
-        {
-            title: '关于App',
-            icon: FluentUIEmojiProxy.colorSvg('teddy_bear_color'),
-            onClick: () => { navigateTo('/about') }
-        }
-    ]
 
     function navigateTo(path: string) {
         state.navigateToDestination = path
@@ -283,7 +205,7 @@ export default function HomePage() {
             }}
         > {
 
-            oneTJFunctions.map((entry) => {
+            OneTJFunctions.entries.map((entry) => {
 
                 return <div
                     className='function-card-container'

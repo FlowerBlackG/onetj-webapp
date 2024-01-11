@@ -14,6 +14,7 @@ import MsgPublishShowPage from "../pages/msg-publish-show/MsgPublishShow"
 import StuExamEnquiriesPage from "../pages/func/stu-exam-enquiries/StuExamEnquiries"
 import StuTimetableTermCompletePage from "../pages/func/student-timetable/term-complete/StuTimetableTermComplete"
 import MyGradesPage from "../pages/func/my-grades/MyGrades"
+import StuTimetableSingleDayPage from "../pages/func/student-timetable/single-day/SingleDay"
 
 
 /**
@@ -161,6 +162,14 @@ export default class PageRouteManager {
             path: 'func/student-timetable/term-complete',
             name: '学期课表',
             element: <StuTimetableTermCompletePage />
+        },
+
+
+
+        {
+            path: 'func/student-timetable/single-day',
+            name: '单日课表',
+            element: <StuTimetableSingleDayPage />
         },
 
         {

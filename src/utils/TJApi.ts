@@ -65,9 +65,19 @@ export default class TJApi {
     static getOAuthRedirectUrl(encodeHashMark: boolean = true): string {
         let urlData = HttpUrlUtils.getUrlData()
 
-        let res = urlData.host.concat('/onetj-webapp/')
-            .concat(encodeHashMark ? '%23' : '#') // "%23" 即 "#"
-            .concat('/tongji-oauth')
+        let res = urlData.host
+
+        let potentialRootPath = '/onetj-webapp'
+        let shouldAddPath = HttpUrlUtils.getUrlData()
+            .path.startsWith(potentialRootPath)
+
+        if (shouldAddPath) {
+            res += potentialRootPath
+        }
+
+        res += '/'
+        res += (encodeHashMark ? '%23' : '#') // "%23" 即 "#"
+        res += '/tongji-oauth'
 
         return res
     }

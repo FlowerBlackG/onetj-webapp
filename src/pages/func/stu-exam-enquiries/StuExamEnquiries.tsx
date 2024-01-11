@@ -126,8 +126,11 @@ export default class StuExamEnquiriesPage extends React.Component<
             style={{
                 position: 'absolute',
                 width: '100%',
-                height: '100%'
+                height: '100%',
+                left: 0, 
+                top: 0
             }}
+            className='overflow-y-overlay'
         >
 
             <Spin
@@ -156,6 +159,8 @@ export default class StuExamEnquiriesPage extends React.Component<
             <div style={{ height: 8 }} />
 
             { this.examInfoCardList() }
+
+            <div style={{ height: 8 }} />
 
         </div>
     }

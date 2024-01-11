@@ -83,9 +83,6 @@ export default function TongjiOAuthPage() {
             setState({...state})
         }
 
-        console.log('--- href ---')
-        console.log(window.location.href)
-
         if (code !== undefined) {
             TJApi.instance().code2token(code).then(res => {
 
