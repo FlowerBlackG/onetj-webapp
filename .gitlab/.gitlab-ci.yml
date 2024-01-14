@@ -1,9 +1,11 @@
 image: node:latest
 
+cache:
+  paths:
+    - node_modules/
+
 before_script:
   - rm -rf build
-  - rm -rf public
-  - CI=false npm i yarn -g
 
 pages:
   stage: deploy
@@ -11,6 +13,7 @@ pages:
     - CI=false yarn
     - CI=false yarn build
     - cp build/index.html build/404.html
+    - rm -rf public
     - mv build public
   artifacts:
     paths:
