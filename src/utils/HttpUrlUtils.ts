@@ -25,11 +25,11 @@ export default class HttpUrlUtils {
 
     static getUrlData(): HttpUrlData {
 
-        let fullUrl = window.document.location.href
+        let fullUrl = window.location.href
 
         let urlObj = new URL(fullUrl)
 
-        let host = window.document.location.host
+        let host = window.location.host
         let fullPath = fullUrl.substring(
             host.length + fullUrl.indexOf(host)
         )

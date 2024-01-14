@@ -62,20 +62,12 @@ export default class TJApi {
 
     static CLIENT_ID = "authorization-xxb-onedottongji-yuchen"
     static BASE_URL = "https://api.tongji.edu.cn"
+    
     static getOAuthRedirectUrl(encodeHashMark: boolean = true): string {
-        let urlData = HttpUrlUtils.getUrlData()
+        let urlObj = new URL(window.location.href)
 
-        let res = urlData.host
-
-        let potentialRootPath = '/onetj-webapp'
-        let shouldAddPath = HttpUrlUtils.getUrlData()
-            .path.startsWith(potentialRootPath)
-
-        if (shouldAddPath) {
-            res += potentialRootPath
-        }
-
-        res += '/'
+        let res = urlObj.origin.concat(urlObj.pathname)
+        
         res += (encodeHashMark ? '%23' : '#') // "%23" 即 "#"
         res += '/tongji-oauth'
 
