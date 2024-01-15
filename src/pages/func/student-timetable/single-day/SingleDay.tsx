@@ -84,7 +84,6 @@ export default function StuTimetableSingleDayPage() {
 
     function loadData() {
         TJApi.instance().getOneTongjiStudentTimetable().then(res => {
-            console.log(res)
 
             courses.length = 0 // 删掉原来有的数据。
 

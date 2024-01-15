@@ -15,6 +15,7 @@ import StuExamEnquiriesPage from "../pages/func/stu-exam-enquiries/StuExamEnquir
 import StuTimetableTermCompletePage from "../pages/func/student-timetable/term-complete/StuTimetableTermComplete"
 import MyGradesPage from "../pages/func/my-grades/MyGrades"
 import StuTimetableSingleDayPage from "../pages/func/student-timetable/single-day/SingleDay"
+import SportsTestDataPage from "../pages/func/sports-test-data/SportsTestData"
 
 
 /**
@@ -176,7 +177,13 @@ export default class PageRouteManager {
             path: 'func/cet-score',
             name: '四六级成绩',
             element: <CetScorePage />
-        }
+        },
+
+        {
+            path: 'func/sports-test-data',
+            name: '体锻体测',
+            element: <SportsTestDataPage />
+        },
         
         
     ]

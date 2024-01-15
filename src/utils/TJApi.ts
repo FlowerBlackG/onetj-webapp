@@ -9,7 +9,7 @@ import { AxiosRequestConfig, AxiosResponse } from "axios"
 import HttpUrlUtils from "./HttpUrlUtils"
 import { request } from "./request"
 import FormData from "form-data"
-import { message, notification } from "antd"
+import { Modal, message, notification } from "antd"
 import DataStore from "./DataStore"
 import { FreeKeyObject } from "./FreeKeyObject"
 
@@ -386,7 +386,16 @@ export default class TJApi {
             this.oneTongjiApiProxy(
                 '/v1/rt/teaching_info/sports_test_health'
             ).then(res => {
-                // todo
+                let userInfos: any = res.userInfos
+                
+                if (userInfos !== undefined) {
+                    resolve(userInfos[0])
+                } else {
+                    message.warning('没有体测数据')
+                    reject('')
+                }
+
+
             }).catch(err => reject)
         })
     }
@@ -396,7 +405,20 @@ export default class TJApi {
             this.oneTongjiApiProxy(
                 '/v1/rt/teaching_info/sports_test_data'
             ).then(res => {
-                // todo
+                
+                let userInfos: any = res.userInfos
+                
+                let userInfosGood = userInfos !== undefined
+                    && userInfos.length > 0
+                if (userInfosGood) {
+                    resolve(userInfos[0])
+                } else {
+                    notification.warning({
+                        message: '没有体锻数据'
+                    })
+                    reject('')
+                }
+
             }).catch(err => reject)
         })
     }
