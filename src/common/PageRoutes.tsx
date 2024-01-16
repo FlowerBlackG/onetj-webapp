@@ -1,7 +1,7 @@
 /* 上财果团团 */
 
 import { ReactNode } from "react"
-import LayoutFrame from "../components/LayoutFrame/LayoutFrame"
+import LayoutFrame, { loadPageToLayoutFrame } from "../components/LayoutFrame/LayoutFrame"
 import { globalData } from "./GlobalData"
 import IndexPage from "../pages/index/Index"
 import { FreeKeyObject } from "../utils/FreeKeyObject"

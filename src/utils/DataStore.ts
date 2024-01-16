@@ -6,7 +6,12 @@
 import Cookies from "universal-cookie";
 
 
-
+/**
+ * 基于 cookies 的简单 key - value 存储器。
+ * 可以用于存储简单数据。
+ * 
+ * 本设施会自动在 cookie 名之前加入前缀。该过程对使用者透明。
+ */
 export default class DataStore {
     protected constructor() {}
 

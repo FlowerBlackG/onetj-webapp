@@ -5,7 +5,7 @@
  * 创建于2024年1月5日 江西省上饶市玉山县
  */
 
-import { AxiosRequestConfig, AxiosResponse } from "axios"
+import { AxiosError, AxiosRequestConfig, AxiosResponse, HttpStatusCode } from "axios"
 import HttpUrlUtils from "./HttpUrlUtils"
 import { request } from "./request"
 import FormData from "form-data"
@@ -18,6 +18,18 @@ interface TJApiTokenData {
     expireTimeSec: number
     refreshToken: string
     refreshTokenExpireSec: number
+}
+
+export interface TJApiUserSingleInfo {
+    userId: string
+    name: string
+    deptCode: string
+    deptName: string
+    userTypeCode: string
+    userTypeName: string
+    statusCode: string
+    statusName: string
+    pid: string
 }
 
 export interface TJApiStudentInfo {
@@ -43,40 +55,28 @@ enum TJApiFailCriticalLevel {
     Warning
 }
 
+/**
+ * 同济开放平台接口封装。
+ * 通过单例对象使用能力。
+ * 
+ * 例：
+ * ```ts
+ * TJApi.instance().getOnetongjiCetScore() ...
+ * ```
+ * 
+ * 借助 cookie 机制在本地保存用户身份凭据，在请求时将其添加到 headers。
+ */
 export default class TJApi {
-    protected static _instance: TJApi
 
-    protected constructor() {}
-
-    public static getInstance(): TJApi {
-        if (!TJApi._instance) {
-            TJApi._instance = new TJApi()
-        }
-
-        return TJApi._instance
-    }
-
-    public static instance(): TJApi {
-        return TJApi.getInstance()
-    }
+    /* 配置参数 */
 
     static CLIENT_ID = "authorization-xxb-onedottongji-yuchen"
     static BASE_URL = "https://api.tongji.edu.cn"
-    
-    static getOAuthRedirectUrl(encodeHashMark: boolean = true): string {
-        let urlObj = new URL(window.location.href)
-
-        let res = urlObj.origin.concat(urlObj.pathname)
-        
-        res += (encodeHashMark ? '%23' : '#') // "%23" 即 "#"
-        res += '/tongji-oauth'
-
-        return res
-    }
 
     static CODE2TOKEN_URL = "$BASE_URL/v1/token"
 
     static SCOPE_LIST = [
+        "dc_user_single_info",
         "dc_user_student_info",
         "rt_onetongji_cet_score",
         "rt_onetongji_school_calendar_current_term_calendar",
@@ -93,6 +93,35 @@ export default class TJApi {
     ]
 
     static TOKEN_DATA_STORAGE_KEY = 'tokenData'
+
+    static getOAuthRedirectUrl(encodeHashMark: boolean = true): string {
+        let urlObj = new URL(window.location.href)
+
+        let res = urlObj.origin.concat(urlObj.pathname)
+        
+        res += (encodeHashMark ? '%23' : '#') // "%23" 即 "#"
+        res += '/tongji-oauth'
+
+        return res
+    }
+
+    /* 单例相关 */
+
+    protected static _instance: TJApi
+
+    protected constructor() {}
+
+    public static getInstance(): TJApi {
+        if (!TJApi._instance) {
+            TJApi._instance = new TJApi()
+        }
+
+        return TJApi._instance
+    }
+
+    public static instance(): TJApi {
+        return TJApi.getInstance()
+    }
 
  
     /* helpers */
@@ -165,17 +194,43 @@ export default class TJApi {
         criticalLevel: TJApiFailCriticalLevel
     ) {
 
-        notification.error({
-            message: requestDetailMsg
-        })
+        let finalMsg = requestDetailMsg
 
         if (criticalLevel === TJApiFailCriticalLevel.Critical) {
             
+            this.clearCache()
+            finalMsg += '\n\n请重新登录。'
+
         } else if (criticalLevel === TJApiFailCriticalLevel.Warning) {
 
         }
+        
+        notification.error({
+            message: requestDetailMsg,
+        })
+
+        if (criticalLevel === TJApiFailCriticalLevel.Critical) {
+            let url = new URL(window.location.href)
+            let loginPageUrl = url.origin + url.pathname
+            loginPageUrl += '#/login'
+            window.location.href = loginPageUrl
+        }
+        
     }
 
+    /**
+     * 检查接口请求的响应是否存在明显错误。
+     * 可以被检出的错误：
+     *     授权状态异常。如：未登录、未给 app 授予某些权限。
+     *     开放平台接口返回内容包含报错信息。指接口返回的数据包含 error_error。
+     *     开放平台接口返回的状态码不是表示“正常”的。
+     * 
+     * @param response 
+     * @param criticalLevel 错误响应级别。Critical 级别会导致用户被强制导向登录页。
+     * 
+     * @returns 0 - 未检测到错误
+     *          非0 - 检测到错误
+     */
     checkError(
         response: AxiosResponse<any, any>,
         criticalLevel: TJApiFailCriticalLevel = TJApiFailCriticalLevel.Critical
@@ -187,6 +242,11 @@ export default class TJApi {
         let errMsg = '地址\n'.concat(request.responseURL).concat('\n')
         errMsg += '状态\n'.concat(response.status.toString()).concat('\n')
         errMsg += '信息\n'.concat(response.statusText).concat('\n')
+        
+        if (response.status === HttpStatusCode.Unauthorized) {
+            this.solveError('登录状态异常', errMsg, criticalLevel)
+            return -3
+        }
 
         if (data.error_error !== undefined) {
             this.solveError(data.error_error, errMsg, criticalLevel)
@@ -201,6 +261,25 @@ export default class TJApi {
         return 0
     }
 
+    /**
+     * 教务系列接口通用处理模式。
+     * 教务系统“一系统”的通用返回格式如下：
+     * 
+     * ```json
+     * {
+     *   "code": 200,
+     *   "msg": "ok",
+     *   "data": {}
+     * }
+     * ```
+     * 
+     * 本工具将传入的请求路径拼接到同济开放平台路径后，发起请求，
+     * 在对收到的结果做简单错误处理后，提取其中的“data”字段直接返回。
+     * 
+     * @param apiPath 请求路径。例：/v1/rt/onetongji/cet_score
+     * @param method 
+     * @returns 请求结果。
+     */
     oneTongjiApiProxy(
         apiPath: string,
         method: string = 'get'
@@ -221,7 +300,13 @@ export default class TJApi {
                 let data = res.data.data
 
                 resolve(data)
-            }).catch(err => {
+            }).catch((err: AxiosError) => {
+                
+                if (this.checkError(err.response!) !== 0) {
+                    reject(err.message)
+                    return
+                }
+                
                 this.solveError(
                     'request err',
                     err.message,
@@ -233,6 +318,7 @@ export default class TJApi {
     }
     
     /* 开放平台 api 封装 */
+
     public code2token(code: string): Promise<null> {
 
         let postBody = new URLSearchParams({})
@@ -281,6 +367,40 @@ export default class TJApi {
         })
     }
 
+    public getUserSingleInfo(): Promise<TJApiUserSingleInfo> {
+        return new Promise((resolve, reject) => {
+            let req = this.basicRequestParams(
+                TJApi.BASE_URL.concat('/v1/dc/user/single_info'),
+                'get'
+            )
+
+            request(req).then(res => {
+                if (this.checkError(res) !== 0) {
+                    reject(null)
+                    return
+                }
+                
+                let data = res.data.data[0]
+                
+                let resObj = data as TJApiUserSingleInfo
+                resolve(resObj)
+            }).catch(err => {
+                if (this.checkError(err.response) !== 0) {
+                    reject(err.message)
+                    return
+                }
+
+                this.solveError(
+                    'request err',
+                    err.message,
+                    TJApiFailCriticalLevel.Warning
+                )
+
+                reject(err.message)
+            })
+        })
+    }
+
     public getStudentInfo(): Promise<TJApiStudentInfo> {
         return new Promise((resolve, reject) => {
             let req = this.basicRequestParams(
@@ -312,6 +432,12 @@ export default class TJApi {
                 
 
             }).catch(err => {
+
+                if (this.checkError(err.response) !== 0) {
+                    reject(err.message)
+                    return
+                }
+
                 this.solveError(
                     'request err',
                     err.message,

@@ -437,7 +437,8 @@ export default function SportsTestDataPage() {
         <div
             style={{
                 fontSize: 24,
-                marginTop: 12
+                marginTop: 12,
+                flexShrink: 0
             }}
         >
             本学期体锻
@@ -446,7 +447,8 @@ export default function SportsTestDataPage() {
         { /* 学生姓名 */ }
         <div
             style={{
-                marginTop: 8
+                marginTop: 8,
+                flexShrink: 0
             }}
         >
             { userNameStr }
@@ -456,6 +458,7 @@ export default function SportsTestDataPage() {
         <div
             style={{
                 marginTop: 4,
+                flexShrink: 0
             }}
         >
             更新时间：{ state.sportsData.updateTime }
@@ -465,7 +468,8 @@ export default function SportsTestDataPage() {
             style={{
                 display: 'grid',
                 gridTemplateColumns: '50% 50%',
-                marginTop: 16
+                marginTop: 16,
+                flexShrink: 0
             }}
         >
             {
@@ -501,22 +505,25 @@ export default function SportsTestDataPage() {
             }
         </div>
 
-        <div style={{ height: 24 }} />
+        <div style={{ height: 24, flexShrink: 0 }} />
     
         { generalHealthData() }
 
-        <div style={{ height: 24 }} />
+        <div style={{ height: 24, flexShrink: 0 }} />
 
         { thisTermHeahthData() }
 
         { /* 底部备注 */ }
         <div
             style={{
-                marginTop: 16
+                marginTop: 16,
+                flexShrink: 0
             }}
         >
             { state.healthData.remarks }
         </div>
+
+        <div style={{ height: 16, flexShrink: 0 }} />
 
     </div>
 }

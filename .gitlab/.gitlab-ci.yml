@@ -1,4 +1,4 @@
-image: node:lts
+image: node:20.11.0
 
 cache:
   paths:

@@ -7,7 +7,7 @@ import { ReactNode } from "react";
 import { loadPageToLayoutFrame } from "../../components/LayoutFrame/LayoutFrame";
 import { later } from "../../utils/later";
 import React from "react";
-import { Button } from "antd";
+import { Button, Modal, Spin } from "antd";
 
 import './Login.css'
 import Version from "../../common/Version";
@@ -20,6 +20,7 @@ import PageRouteManager from "../../common/PageRoutes";
 interface LoginPageState {
     toOAuthPage: boolean
     toHomePage: boolean
+    loginLoading: boolean
 }
 
 export default class LoginPage extends React.Component<
@@ -28,7 +29,8 @@ export default class LoginPage extends React.Component<
     pageEntity = PageRouteManager.getRouteEntity('login')
     state: LoginPageState = {
         toOAuthPage: false,
-        toHomePage: false
+        toHomePage: false,
+        loginLoading: false
     }
 
     constructor(props: any) {
@@ -48,8 +50,27 @@ export default class LoginPage extends React.Component<
 
     tryAutoLogin() {
         if (TJApi.instance().tokenAvailable()) {
-            this.state.toHomePage = true
+            this.state.loginLoading = true
             this.setState({})
+            TJApi.instance().getUserSingleInfo().then(res => {
+                if (res.userTypeCode === '2') { // 2 即本科生
+                    this.state.toHomePage = true
+                } else {
+                    Modal.info({
+                        title: '暂不可用',
+                        content: '非常抱歉，本应用暂时仅接入本科生数据。老师们和研究生朋友请多等等啦～～',
+                        maskClosable: true,
+                        closable: true
+                    })
+                }
+            }).catch(err => {
+
+            }).finally(() => {
+                this.setState({
+                    loginLoading: false
+                })
+            })
+
         }
     }
 
@@ -87,15 +108,27 @@ export default class LoginPage extends React.Component<
                     boxSizing: 'border-box'
                 }}
             >
-                <div
-                    className="button"
-                    onClick={() => {
-                        this.state.toOAuthPage = true
-                        this.setState({})
-                    }}
-                >
-                    统一身份认证登录
-                </div>
+                {
+                    this.state.loginLoading ?
+                        <Spin
+                            spinning={true}
+                            style={{
+                                width: '100%',
+                            }}
+                        />
+
+                        :
+
+                        <div
+                            className="button"
+                            onClick={() => {
+                                this.state.toOAuthPage = true
+                                this.setState({})
+                            }}
+                        >
+                            统一身份认证登录
+                        </div>
+                }
             </div>
 
 
