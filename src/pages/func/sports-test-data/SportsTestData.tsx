@@ -286,7 +286,7 @@ export default function SportsTestDataPage() {
                 .concat(' 千克')
         })
         data.push({
-            key: '体重',
+            key: '长跑',
             value: state.healthData.thisTerm.enduranceRunning[0]
                 .concat(' 分')
                 .concat(state.healthData.thisTerm.enduranceRunning[1])

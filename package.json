@@ -1,7 +1,6 @@
 {
     "name": "onetj-webapp",
     "version": "0.1.0",
-
     "dependencies": {
         "@ant-design/icons": "^5.2.6",
         "@testing-library/jest-dom": "^5.14.1",
@@ -51,12 +50,9 @@
             "last 1 safari version"
         ]
     },
-
-
     "devDependencies": {
         "gh-pages": "^6.1.1"
     },
-
     "private": true,
     "homepage": "."
 }
