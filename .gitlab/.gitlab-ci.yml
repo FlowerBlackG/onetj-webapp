@@ -1,4 +1,5 @@
-image: node:20.11.0
+image: dockerproxy.net/library/node:lts
+# image: node:20.11.0
 
 cache:
   paths:
