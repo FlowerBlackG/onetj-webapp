@@ -61,7 +61,15 @@ export class OneTJFunctions {
         {
             title: '我的考试',
             icon: 'https://canfish.oss-cn-shanghai.aliyuncs.com/shared/fluentui-emoji/color-svg/target/memo_color.svg',
-            onClick: () => { hooks.navigateTo('/func/stu-exam-enquiries') }
+            onClick: () => { 
+                // TODO
+
+                message.error('功能暂时关闭。请等待信息办恢复。')
+                return
+
+                // TODO
+                hooks.navigateTo('/func/stu-exam-enquiries') 
+            }
         },
         {
             title: '四六级',
