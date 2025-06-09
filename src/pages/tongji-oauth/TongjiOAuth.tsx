@@ -46,7 +46,8 @@ export default function TongjiOAuthPage() {
         target += '?redirect_uri='.concat(TJApi.getOAuthRedirectUrl())
         target += '&client_id='.concat(TJApi.CLIENT_ID)
         target += '&response_type=code'
-
+        target += '&kc_idp_hint=tjiam'
+        
         let scopeList = TJApi.SCOPE_LIST
         let scope = ''
         for (let it of scopeList) {

@@ -1,3 +1,12 @@
+version tag  : 1.1.0
+version code : 8
+build time   : 2025-06-09T17:45+08:00
+update log   :
+改进：
+* 使用 TJIAM 登录器（iam 统一身份认证登录）
+
+--------------------------------
+
 version tag  : 1.0.1
 version code : 6
 build time   : 2024-11-20T19:15+08:00

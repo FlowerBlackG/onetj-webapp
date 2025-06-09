@@ -2,13 +2,13 @@
 
 export default class Version {
 
-    static code = 7
-    static tag = "1.0.1-1"
+    static code = 8
+    static tag = "1.1.0"
 
     /**
      * 构建时间。遵循 ISO8601 格式。
      */
-    static buildTime = '2024-11-21T20:48+08:00'
+    static buildTime = '2025-06-09T17:45+08:00'
 
     private constructor() {}
 }
